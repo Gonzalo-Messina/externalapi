@@ -8,6 +8,7 @@ import org.apache.juli.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -19,6 +20,7 @@ public class TelevisionService {
     private ITelevisionRepository tvRepo;
     private static final Log logger = LogFactory.getLog(TelevisionService.class);
 
+    @Transactional(readOnly = true)
     public List<Television> getAll(){
         logger.info("Entering getAll service");
         List<Television> tv = (List<Television>) tvRepo.findAll();
@@ -31,6 +33,7 @@ public class TelevisionService {
         return tv;
     }
 
+    @Transactional(readOnly = true)
     public Optional<Television> getById(Integer id){
         logger.info("Entering getById method");
         Optional<Television> tv = tvRepo.findById(id);
@@ -44,6 +47,7 @@ public class TelevisionService {
 
     }
 
+    @Transactional(readOnly = true)
     public List<Television> getByBrand(String brand){
         logger.info("Entering getByBrand service");
         List<Television> tv = tvRepo.findByBrand(brand);
@@ -55,6 +59,7 @@ public class TelevisionService {
         return tv;
     }
 
+    @Transactional(readOnly = true)
     public List<Television> getByInches(Integer inches){
         logger.info("Entering getByInches service");
         List<Television> tv = tvRepo.findByInches(inches);
@@ -66,6 +71,7 @@ public class TelevisionService {
         return tv;
     }
 
+    @Transactional(readOnly = true)
     public List<Television> getTop2SalesByBrand(String brand){
         logger.info("Entering getTop2SalesByBrand service");
         List<Television> tvBrand = getByBrand(brand);
@@ -82,6 +88,7 @@ public class TelevisionService {
 
     }
 
+    @Transactional(readOnly = true)
     public List<Television> getTop2SalesByInches(Integer inches){
         logger.info("Entering getTop2SalesByBrand service");
         List<Television> tvInches = getByInches(inches);
@@ -98,10 +105,12 @@ public class TelevisionService {
 
     }
 
+    @Transactional(rollbackFor = {TelevisionExceptions.class})
     public Television addTelevision(Television tvParm){
         logger.info("Entering addTelevision service");
         if (Objects.isNull(tvParm)){
             logger.error("Object to add is null");
+            logger.error("Rollback transaction");
             logger.error("Exit addTelevision service with error");
             throw new TelevisionExceptions("The Object to add is null",HttpStatus.NO_CONTENT);
         }
@@ -111,10 +120,12 @@ public class TelevisionService {
 
     }
 
+    @Transactional(rollbackFor = {TelevisionExceptions.class})
     public Television updateTelevision(Television tvParm){
         logger.info("Entering updateTelevision Service");
         if (Objects.isNull(tvParm)){
             logger.error("Object to update is null");
+            logger.info("Rollback transaction");
             logger.error("Exit updateTelevision service with error");
             throw new TelevisionExceptions("The Object to update is null",HttpStatus.NO_CONTENT);
         }
@@ -128,15 +139,18 @@ public class TelevisionService {
         return tvRepo.save(tvParm);
     }
 
+    @Transactional(rollbackFor = {TelevisionExceptions.class})
     public void deleteTelevision(Integer id){
         logger.info("Entering deleteTelevision service");
         if (Objects.isNull(id)){
             logger.error("The id is null");
+            logger.error("Rollback transaction");
             throw new TelevisionExceptions("The id to delete is null",HttpStatus.NO_CONTENT);
         }
         Optional<Television> tv = tvRepo.findById(id);
         if (tv.isEmpty()){
             logger.error("No television found for id:"+id);
+            logger.error("Rollback transaction");
             throw new TelevisionExceptions("No television found for id",HttpStatus.NO_CONTENT);
         }
         tvRepo.deleteById(id);
