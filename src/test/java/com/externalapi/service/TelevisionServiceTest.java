@@ -3,6 +3,7 @@ package com.externalapi.service;
 import com.externalapi.entity.Television;
 import com.externalapi.exceptions.TelevisionExceptions;
 import com.externalapi.repository.ITelevisionRepository;
+import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,15 +11,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.externalapi.util.ListUtil.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {TelevisionServiceTest.class})
-class TelevisionServiceTest {
+class TelevisionServiceTest implements WithAssertions {
 
     @Mock
     ITelevisionRepository tvRepo;
@@ -45,16 +46,24 @@ class TelevisionServiceTest {
 
     @Test
     void getAll() {
+        //Arrange
         when(tvRepo.findAll()).thenReturn(tv);
-        Assertions.assertEquals(tv.size(),tvService.getAll().size());
-        Assertions.assertEquals(tvService.getAll(),tv);
+
+        //Act
+        List<Television> tvTest = tvService.getAll();
+
+        //Assert
+        assertThat(tvTest)
+                .hasSize(6)
+                .isEqualTo(tv);
     }
     @Test
     void getAllWithEmptyList_ThrowsTelevisionException(){
         tv.clear();
         when(tvRepo.findAll()).thenReturn(tv);
-        //Use lambda function
-        Assertions.assertThrows(TelevisionExceptions.class,()->tvService.getAll());
+
+        assertThatExceptionOfType(TelevisionExceptions.class)
+                .isThrownBy(()->tvService.getAll());
     }
     @Test
     void getById() {
@@ -66,9 +75,19 @@ class TelevisionServiceTest {
                 when(tvRepo.findById(id)).thenReturn(Optional.of(tvId));
             }
         }
-        Assertions.assertEquals(Optional.of(tvToFind),tvService.getById(id));
 
+        assertThat(tvToFind)
+                .hasFieldOrPropertyWithValue("id",1);
 
+    }
+
+    @Test
+    void getById_withWrongId(){
+        Integer id = 100;
+        when(tvRepo.findById(id)).thenThrow(TelevisionExceptions.class);
+
+        assertThatExceptionOfType(TelevisionExceptions.class)
+                .isThrownBy(()->tvService.getById(id));
     }
 
     @Test
@@ -79,39 +98,64 @@ class TelevisionServiceTest {
         when(tvRepo.findByBrand(brand)).thenReturn(tvList);
 
         List<Television> tvBrand = tvService.getByBrand(brand);
+
         for (Television tv : tvBrand) {
-            Assertions.assertEquals(brand, tv.getBrand());
+            assertThat(tv)
+                    .hasFieldOrPropertyWithValue("brand",brand);
         }
+        assertThat(tvBrand).hasSize(tvList.size());
+    }
+
+    @Test
+    void getByBrand_withWrongBrand(){
+        String brand = "Non-exist";
+        when(tvRepo.findByBrand(brand)).thenThrow(TelevisionExceptions.class);
+
+        assertThatExceptionOfType(TelevisionExceptions.class)
+                .isThrownBy(()->tvService.getByBrand(brand));
     }
     @Test
     void getByBrandWithEmptyList_ThrowsTelevisionException(){
         String brand = "samsung";
         tv.clear();
-
         when(tvRepo.findByBrand(brand)).thenReturn(tv);
         //Use lambda function
-        Assertions.assertThrows(TelevisionExceptions.class,()->tvService.getByBrand(brand));
+
+        assertThatExceptionOfType(TelevisionExceptions.class)
+                .isThrownBy(()->tvService.getByBrand(brand));
     }
 
     @Test
     void getByInches() {
         Integer inches = 50;
         List<Television> tvByInchesList = getFromListTelevisionByInches(tv,inches);
-
         when(tvRepo.findByInches(inches)).thenReturn(tvByInchesList);
+
         List<Television> tvInches = tvService.getByInches(inches);
+
         for (Television tv : tvInches) {
-            Assertions.assertEquals(inches,tv.getInches());
+            //Assertions.assertEquals(inches,tv.getInches());
+            assertThat(tv).hasFieldOrPropertyWithValue("inches",inches);
         }
+        assertThat(tvInches).hasSize(tvByInchesList.size());
+    }
+
+    @Test
+    void getByInches_withWrongInches(){
+        Integer inches = 99;
+        when(tvRepo.findByInches(inches)).thenThrow(TelevisionExceptions.class);
+
+        assertThatExceptionOfType(TelevisionExceptions.class)
+                .isThrownBy(()->tvService.getByInches(inches));
     }
     @Test
     void getByInchesWithEmptyList_ThrowsTelevisionException(){
         Integer inches = 50;
         tv.clear();
-
         when(tvRepo.findByInches(inches)).thenReturn(tv);
         //Use lambda function
-        Assertions.assertThrows(TelevisionExceptions.class,()->tvService.getByInches(inches));
+        assertThatExceptionOfType(TelevisionExceptions.class)
+                .isThrownBy(()->tvService.getByInches(inches));
     }
 
     @Test
@@ -119,13 +163,13 @@ class TelevisionServiceTest {
         String brand = "sony";
         List<Television> tvList = getFromListTelevisionByBrand(tv,brand);
         List<Television> tvTop2 = getTop2OfaList(tvList);
-
         when(tvRepo.findByBrand(brand)).thenReturn(tvList);
+
         List<Television> top2ByBrand = tvService.getTop2SalesByBrand(brand);
 
-        for (int i = 0;i < 2;i++){
-            Assertions.assertEquals(top2ByBrand.get(i).getCode(),tvTop2.get(i).getCode());
-        }
+        assertThat(top2ByBrand).hasSize(2)
+                .allMatch(tv->tv.getBrand().equals(brand),brand)
+                .containsAll(tvTop2);//see that all objects has the correct brand
 
     }
 
@@ -141,69 +185,41 @@ class TelevisionServiceTest {
         for (int i = 0;i < 2;i++){
             Assertions.assertEquals(top2ByBrand.get(i).getCode(),tvTop2.get(i).getCode());
         }
+        assertThat(top2ByBrand).hasSize(2)
+                .allMatch(tv->tv.getInches().equals(inches));//see that all objects has the correct inches
     }
 
     @Test
     void addTelevision() {
         Television newTv = new Television(1006,"sony",120.55,80,15);
-
         when(tvRepo.save(newTv)).thenReturn(newTv);
-        Assertions.assertEquals(newTv,tvService.addTelevision(newTv));
+
+        Television tvSaved = tvService.addTelevision(newTv);
+
+        //Assertions.assertEquals(newTv,);
+        assertThat(tvSaved).isSameAs(newTv);
+
+
         //Preguntar si puedo hacer un test que evalue el tam de la lista luego de agregar,deberia tener 1 mass
     }
 
     //doesn't work
-/*    @Test
+    @Test
     void updateTelevision() {
         Integer id = 1;
         Television tvUpdated = new Television(10010,"lg",150.00,50,5);
         tvUpdated.setId(id);
-        Television tvToFind = tv.get(id-1);
+        when(tvRepo.existsById(id)).thenReturn(true);
+        when(tvRepo.save(tvUpdated)).thenReturn(tvUpdated);
 
-        when(tvRepo.findById(id)).thenReturn(Optional.of(tvToFind));
+        Television newTv = tvService.updateTelevision(tvUpdated);
 
-        Television newTv = tvService.updateTelevision(tvToFind);
-
-        Assertions.assertEquals(tvService.updateTelevision(tvToFind),Optional.of(tvUpdated));
-    }*/
+        assertThat(newTv).isSameAs(tvUpdated);
+    }
 
     //Ask how to test this method, because delete service return void
     @Test
     void deleteTelevision() {
         }
-
-
-    /*Utils methods*/
-
-    private List<Television> getFromListTelevisionByBrand(List<Television> tvParam, String brand){
-        List<Television> tvList = new LinkedList<>();
-        for (Television tv: tvParam) {
-            if (tv.getBrand().equals(brand)){
-                tvList.add(tv);
-            }
-        }
-        return tvList;
-    }
-
-    private List<Television> getFromListTelevisionByInches(List<Television> tvParam, Integer inches){
-        List<Television> tvList = new LinkedList<>();
-        for (Television tv: tvParam) {
-            if (tv.getInches().equals(inches)){
-                tvList.add(tv);
-            }
-        }
-        return tvList;
-    }
-
-    private List<Television> getTop2OfaList(List<Television> tvParam){
-        List<Television> tvTop2 = new LinkedList<>();
-        tvParam.sort(Comparator.comparing(Television::getSales)
-                .thenComparing(Television::getSales));
-
-        for (int i = 1; i <= 2; i++) {
-            tvTop2.add(tvParam.get(tvParam.size()-i));
-        }
-        return tvTop2;
-    }
 
 }
