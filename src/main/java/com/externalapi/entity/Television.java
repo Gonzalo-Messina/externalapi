@@ -39,6 +39,9 @@ public class Television implements Serializable, Comparator<Television> {
     @NonNull
     private Integer sales;
 
+    @Version
+    private long version;
+
     @Override
     public int compare(Television tv1, Television tv2) {
         return tv1.getSales().compareTo(tv2.getSales());

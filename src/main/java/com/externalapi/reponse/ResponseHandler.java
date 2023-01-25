@@ -1,12 +1,11 @@
 package com.externalapi.reponse;
-import com.externalapi.entity.Television;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-/*In this class i create a custom response
+/*In this class I create a custom response
  with the data, message and info to retrieve in the controller
  */
 public class ResponseHandler {

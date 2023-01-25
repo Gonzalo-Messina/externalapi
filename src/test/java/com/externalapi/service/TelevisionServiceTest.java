@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.externalapi.util.ListUtil.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {TelevisionServiceTest.class})
 class TelevisionServiceTest implements WithAssertions {
@@ -84,7 +84,7 @@ class TelevisionServiceTest implements WithAssertions {
     @Test
     void getById_withWrongId(){
         Integer id = 100;
-        when(tvRepo.findById(id)).thenThrow(TelevisionExceptions.class);
+        when(tvRepo.findById(id)).thenReturn(Optional.empty());
 
         assertThatExceptionOfType(TelevisionExceptions.class)
                 .isThrownBy(()->tvService.getById(id));
@@ -203,6 +203,14 @@ class TelevisionServiceTest implements WithAssertions {
         //Preguntar si puedo hacer un test que evalue el tam de la lista luego de agregar,deberia tener 1 mass
     }
 
+    @Test
+    void addTelevision_withNullArgument(){
+        //Television tvSaved = tvService.addTelevision(null);
+
+        assertThatExceptionOfType(TelevisionExceptions.class)
+                .isThrownBy(()->tvService.addTelevision(null));
+    }
+
     //doesn't work
     @Test
     void updateTelevision() {
@@ -217,9 +225,52 @@ class TelevisionServiceTest implements WithAssertions {
         assertThat(newTv).isSameAs(tvUpdated);
     }
 
+    @Test
+    void updateTelevision_withNullArgument(){
+        assertThatExceptionOfType(TelevisionExceptions.class)
+                .isThrownBy(()->tvService.updateTelevision(null));
+    }
+
+    @Test
+    void updateTelevision_withWrongId(){
+        Integer id = 100;
+        Television tvUpdated = new Television(10010,"lg",150.00,50,5);
+        tvUpdated.setId(id);
+        when(tvRepo.findById(id)).thenReturn(Optional.empty());
+
+        assertThatExceptionOfType(TelevisionExceptions.class)
+                .isThrownBy(()->tvService.updateTelevision(tvUpdated));
+    }
+
     //Ask how to test this method, because delete service return void
     @Test
     void deleteTelevision() {
-        }
+        Integer id = 1;
+        Television newTv = new Television();
+        newTv.setId(1);
+        tvRepo.save(newTv);
+        doNothing().when(tvRepo).deleteById(id);
+
+        tvService.deleteTelevision(id);
+
+        verify(tvRepo).deleteById(id);
+    }
+
+    @Test
+    void deleteTelevision_withNullId(){
+        //when(tvService.deleteTelevision(null)).thenThrow(TelevisionExceptions.class);
+
+        assertThatExceptionOfType(TelevisionExceptions.class)
+                .isThrownBy(()->tvService.deleteTelevision(null));
+    }
+
+    @Test
+    void deleteTelevision_withBadId(){
+        Integer id = 100;
+        //when(tvService.deleteTelevision(null)).thenThrow(TelevisionExceptions.class);
+
+        assertThatExceptionOfType(TelevisionExceptions.class)
+                .isThrownBy(()->tvService.deleteTelevision(id));
+    }
 
 }

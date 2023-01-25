@@ -2,7 +2,6 @@ package com.externalapi.controller;
 
 import com.externalapi.entity.Television;
 import com.externalapi.service.TelevisionService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -22,8 +20,6 @@ import java.util.*;
 
 import static com.externalapi.util.ListUtil.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.http.RequestEntity.post;
-import static org.springframework.http.RequestEntity.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -78,7 +74,7 @@ class TelevisionControllerTest {
 /*    @Test
     void getAll_withEmptyList_return404() throws Exception{
         tv.clear();
-        when(tvService.getAll()).thenReturn(doThrow(TelevisionExceptions.class));
+        when(tvService.getAll()).thenReturn(tv);
 
         mockMVC.perform(get("/televisions").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -213,7 +209,7 @@ class TelevisionControllerTest {
         map.put("status", 200);
         map.put("data", newTv);
 
-        mockMVC.perform(MockMvcRequestBuilders.post("/televisions")
+        mockMVC.perform(MockMvcRequestBuilders.put("/televisions")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(mapper.writeValueAsString(map)))//used mapper to convert object
                 .andExpect(MockMvcResultMatchers.status().isOk())

@@ -6,11 +6,14 @@ import com.externalapi.repository.ITelevisionRepository;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
+import static com.externalapi.util.ListUtil.getTop2OfaList;
 
 
 @Service
@@ -19,10 +22,11 @@ public class TelevisionService {
     @Autowired
     private ITelevisionRepository tvRepo;
     private static final Log logger = LogFactory.getLog(TelevisionService.class);
+    private static final String NO_TV_ID = "No television found for id:";
 
     @Transactional(readOnly = true)
     public List<Television> getAll(){
-        List<Television> tv = (List<Television>) tvRepo.findAll();
+        List<Television> tv = tvRepo.findAll();
         if (tv.isEmpty()) {
             logger.error("No object retrieve");
             throw new TelevisionExceptions("No object retrieve", HttpStatus.NOT_FOUND);
@@ -34,7 +38,7 @@ public class TelevisionService {
     public Optional<Television> getById(Integer id){
         Optional<Television> tv = tvRepo.findById(id);
         if (tv.isEmpty()){
-            logger.error("No television found for id:"+id);
+            logger.error(NO_TV_ID+id);
             throw new TelevisionExceptions("No television for id:"+id,HttpStatus.NO_CONTENT);
         }
         return tv;
@@ -64,30 +68,16 @@ public class TelevisionService {
     @Transactional(readOnly = true)
     public List<Television> getTop2SalesByBrand(String brand){
         List<Television> tvBrand = getByBrand(brand);
-        List<Television> tvTop2 = new LinkedList<>();
 
-        tvBrand.sort(Comparator.comparing(Television::getSales)
-                .thenComparing(Television::getSales));
-
-        for (int i = 1; i <= 2; i++) {
-            tvTop2.add(tvBrand.get(tvBrand.size()-i));
-        }
-        return tvTop2;
+        return getTop2OfaList(tvBrand);
 
     }
 
     @Transactional(readOnly = true)
     public List<Television> getTop2SalesByInches(Integer inches){
         List<Television> tvInches = getByInches(inches);
-        List<Television> tvTop2 = new LinkedList<>();
 
-        tvInches.sort(Comparator.comparing(Television::getSales)
-                .thenComparing(Television::getSales));
-
-        for (int i = 1; i <= 2; i++) {
-            tvTop2.add(tvInches.get(tvInches.size()-i));
-        }
-        return tvTop2;
+        return getTop2OfaList(tvInches);
 
     }
 
@@ -97,8 +87,7 @@ public class TelevisionService {
             logger.error("Object to add is null");
             throw new TelevisionExceptions("The Object to add is null",HttpStatus.NO_CONTENT);
         }
-        Television tv = tvRepo.save(tvParm);
-        return tv;
+        return tvRepo.save(tvParm);
 
     }
 
@@ -108,15 +97,16 @@ public class TelevisionService {
             logger.error("Object to update is null");
             throw new TelevisionExceptions("The Object to update is null",HttpStatus.NO_CONTENT);
         }
-        //Optional<Television> tv = tvRepo.findById(tvParm.getId());
         if(!tvRepo.existsById(tvParm.getId())){
-            logger.error("No television found for id:"+tvParm.getId());
+            logger.error(NO_TV_ID+tvParm.getId());
             throw new TelevisionExceptions("The television don't exist",HttpStatus.NO_CONTENT);
         }
-/*        if (Objects.isNull(tv)){
-            logger.error("No television found for id:"+tvParm.getId());
-            throw new TelevisionExceptions("The television don't exist",HttpStatus.NO_CONTENT);
-        }*/
+        Optional<Television> tvRetrieved = tvRepo.findById(tvParm.getId());
+        if (tvRetrieved.isPresent() &&tvRetrieved.get().getVersion() != tvParm.getVersion()){
+            throw new OptimisticLockingFailureException("The television to update with id"+
+                    tvParm.getId()+"has been modified since it was retrieved");
+        }
+
         return tvRepo.save(tvParm);
     }
 
@@ -126,15 +116,10 @@ public class TelevisionService {
             logger.error("The id is null");
             throw new TelevisionExceptions("The id to delete is null",HttpStatus.NO_CONTENT);
         }
-        //Optional<Television> tv = tvRepo.findById(id);
         if(!tvRepo.existsById(id)){
-            logger.error("No television found for id:"+id);
+            logger.error(NO_TV_ID+id);
             throw new TelevisionExceptions("The television don't exist",HttpStatus.NO_CONTENT);
         }
-        /*if (tv.isEmpty()){
-            logger.error("No television found for id:"+id);
-            throw new TelevisionExceptions("No television found for id",HttpStatus.NO_CONTENT);
-        }*/
         tvRepo.deleteById(id);
 
     }
