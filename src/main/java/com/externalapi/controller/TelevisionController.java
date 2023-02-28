@@ -2,7 +2,7 @@ package com.externalapi.controller;
 
 import com.externalapi.entity.Television;
 import com.externalapi.exceptions.TelevisionExceptions;
-import com.externalapi.reponse.ResponseHandler;
+import com.externalapi.response.ResponseHandler;
 import com.externalapi.service.TelevisionService;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.juli.logging.Log;
@@ -25,58 +25,51 @@ public class TelevisionController {
     private TelevisionService tvService;
 
     @GetMapping()
-    public ResponseEntity<Object> getAll(){
-        List<Television> tv = tvService.getAll();
-        return ResponseHandler.generateResponse("Successfully",HttpStatus.OK,tv);
+    //Puedo agregar ejemplos en swagger con etiquetas aca
+    public List<Television> getAll(){
+        return tvService.getAll();
     }
 
     @GetMapping("/id")
-    public ResponseEntity<Object> getTelevisionById(@RequestParam(value="id") Integer id){
-        Optional<Television> tv  = tvService.getById(id);
-        return ResponseHandler.generateResponse("Successfully",HttpStatus.OK,tv);
+    public Optional<Television> getTelevisionById(@RequestParam(value="id") Integer id){
+        return tvService.getById(id);
     }
 
     @GetMapping("/brand")
-    public ResponseEntity<Object> getTelevisionsByBrand(@RequestParam(value = "brand") String brand){
+    public List<Television> getTelevisionsByBrand(@RequestParam(value = "brand") String brand){
         if (NumberUtils.isCreatable(brand)) {//this method retrieves true if the string is numeric
             logger.error("ERROR: The string: "+brand+" is not a valid string");
             throw new TelevisionExceptions("ERROR: The string: "+brand+" is not a valid string", HttpStatus.BAD_REQUEST);
         }
-            List<Television> tv = tvService.getByBrand(brand);
-        return ResponseHandler.generateResponse("Successfully",HttpStatus.OK,tv);
+        return tvService.getByBrand(brand);
     }
 
     @GetMapping("/top2salesByBrand")
-    public ResponseEntity<Object> getTop2SalesByBrand(@RequestParam (value = "brand") String brand){
+    public List<Television> getTop2SalesByBrand(@RequestParam (value = "brand") String brand){
         if (NumberUtils.isCreatable(brand)) {//this method retrieves true if the string is numeric
             logger.error("ERROR: The string: "+brand+" is not a valid string");
             throw new TelevisionExceptions("ERROR: The string: "+brand+" is not a valid string", HttpStatus.BAD_REQUEST);
         }
-        List<Television> tv = tvService.getTop2SalesByBrand(brand);
-        return ResponseHandler.generateResponse("Successfully",HttpStatus.OK,tv);
+        return tvService.getTop2SalesByBrand(brand);
     }
 
     @GetMapping("/top2salesByInches")
-    public ResponseEntity<Object> getTop2SalesByInches(@RequestParam (value = "inches") Integer inches){
-        List<Television> tv = tvService.getTop2SalesByInches(inches);
-        return ResponseHandler.generateResponse("Successfully",HttpStatus.OK,tv);
+    public List<Television> getTop2SalesByInches(@RequestParam (value = "inches") Integer inches){
+        return tvService.getTop2SalesByInches(inches);
     }
     @GetMapping("/inches")
-    public ResponseEntity<Object> getTelevisionsByInches(@RequestParam(value = "inches") Integer inches){
-        List<Television> tv = tvService.getByInches(inches);
-        return ResponseHandler.generateResponse("Successfully",HttpStatus.OK,tv);
+    public List<Television> getTelevisionsByInches(@RequestParam(value = "inches") Integer inches){
+        return tvService.getByInches(inches);
     }
 
     @PostMapping()
-    public ResponseEntity<Object> addTelevision(@RequestBody Television tvParm) {
-        Television tv = tvService.addTelevision(tvParm);
-        return ResponseHandler.generateResponse("Successfully",HttpStatus.OK,tv);
+    public Television addTelevision(@RequestBody Television tvParm) {
+        return tvService.addTelevision(tvParm);
     }
 
     @PutMapping()
-    public ResponseEntity<Object> updateTelevision (@RequestBody Television tvParm) {
-        Television tv = tvService.updateTelevision(tvParm);
-        return ResponseHandler.generateResponse("Successfully",HttpStatus.OK,tv);
+    public Television updateTelevision (@RequestBody Television tvParm) {
+        return tvService.updateTelevision(tvParm);
     }
 
     @DeleteMapping("/id")

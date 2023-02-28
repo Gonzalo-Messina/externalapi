@@ -3,7 +3,6 @@ package com.externalapi.exceptions;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

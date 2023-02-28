@@ -1,6 +1,6 @@
 package com.externalapi.exceptions;
 
-import com.externalapi.reponse.ResponseHandler;
+import com.externalapi.response.ResponseHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
