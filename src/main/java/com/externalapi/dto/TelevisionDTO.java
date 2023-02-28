@@ -1,3 +1,4 @@
+/*
 package com.externalapi.dto;
 
 import com.externalapi.entity.Television;
@@ -24,3 +25,4 @@ public class TelevisionDTO implements Serializable {
 
 
 }
+*/

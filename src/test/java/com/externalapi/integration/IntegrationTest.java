@@ -2,9 +2,6 @@ package com.externalapi.integration;
 
 import com.externalapi.entity.Television;
 import org.assertj.core.api.WithAssertions;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -12,17 +9,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.*;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.net.URL;
-import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class IntegrationTest implements WithAssertions {
@@ -34,7 +24,7 @@ class IntegrationTest implements WithAssertions {
 
     @BeforeEach
     public void setUp() throws Exception {
-        this.baseUrl = new URL("http://localhost:8090"+"/");
+        this.baseUrl = new URL("http://localhost:8080"+"/");
     }
     @Test
     void getAll() throws Exception {

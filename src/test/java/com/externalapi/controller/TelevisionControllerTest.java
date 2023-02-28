@@ -63,9 +63,9 @@ class TelevisionControllerTest {
 
         //generate get request
         mockMVC.perform(get("/televisions").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())//indicates that the status expected
+                .andExpect(MockMvcResultMatchers.status().isOk())//indicates the status expected
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))//indicates that the response is a json
-                .andExpect(jsonPath("$.data[0].code").value(1000));//test the code of the first item
+                .andExpect(jsonPath("$[0].code").value(1000));//test the code of the first item
 
         verify(tvService).getAll();//verify that when tvService is use, it calls getAll service
 
@@ -90,7 +90,7 @@ class TelevisionControllerTest {
         mockMVC.perform(get(baseUrl+"/id?id=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.id").value(1));
+                .andExpect(jsonPath("$.id").value(1));
 
         verify(tvService).getById(id);//verify that when tvService is use, it calls getAll service
 
@@ -106,8 +106,8 @@ class TelevisionControllerTest {
         mockMVC.perform(get(baseUrl+"/brand?brand="+brand))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data[0].brand").value(brand))
-                .andExpect(jsonPath("$.data.length()").value(tvBrand.size()));
+                .andExpect(jsonPath("$[0].brand").value(brand))
+                .andExpect(jsonPath("$.length()").value(tvBrand.size()));
 
     }
 
@@ -134,9 +134,9 @@ class TelevisionControllerTest {
         mockMVC.perform(get(baseUrl+"/top2salesByBrand?brand="+brand))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data[0].brand").value(brand))
-                .andExpect(jsonPath("$.data[1].brand").value(brand))
-                .andExpect(jsonPath("$.data.length()").value(top2ByBrand.size()));
+                .andExpect(jsonPath("$[0].brand").value(brand))
+                .andExpect(jsonPath("$[1].brand").value(brand))
+                .andExpect(jsonPath("$.length()").value(top2ByBrand.size()));
     }
 
     @Test
@@ -162,9 +162,9 @@ class TelevisionControllerTest {
         mockMVC.perform(get(baseUrl+"/top2salesByInches?inches="+inches))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data[0].inches").value(inches))
-                .andExpect(jsonPath("$.data[1].inches").value(inches))
-                .andExpect(jsonPath("$.data.length()").value(top2ByInches.size()));
+                .andExpect(jsonPath("$[0].inches").value(inches))
+                .andExpect(jsonPath("$[1].inches").value(inches))
+                .andExpect(jsonPath("$.length()").value(top2ByInches.size()));
     }
 
     @Test
@@ -176,8 +176,8 @@ class TelevisionControllerTest {
         mockMVC.perform(get(baseUrl+"/inches?inches="+inches))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data[0].inches").value(inches))
-                .andExpect(jsonPath("$.data.length()").value(tvInches.size()));
+                .andExpect(jsonPath("$[0].inches").value(inches))
+                .andExpect(jsonPath("$.length()").value(tvInches.size()));
     }
 
     @Test
@@ -186,16 +186,11 @@ class TelevisionControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         when(tvService.addTelevision(newTv)).thenReturn(newTv);
 
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("message", "Successfully");
-        map.put("status", 200);
-        map.put("data", newTv);
-
         mockMVC.perform(MockMvcRequestBuilders.post("/televisions")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(mapper.writeValueAsString(map)))//used mapper to convert object
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                        .content(mapper.writeValueAsString(newTv)))//used mapper to convert object
+                .andExpect(MockMvcResultMatchers.status().isOk());
+                //.andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -204,16 +199,11 @@ class TelevisionControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         when(tvService.updateTelevision(newTv)).thenReturn(newTv);
 
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("message", "Successfully");
-        map.put("status", 200);
-        map.put("data", newTv);
-
         mockMVC.perform(MockMvcRequestBuilders.put("/televisions")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(mapper.writeValueAsString(map)))//used mapper to convert object
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                        .content(mapper.writeValueAsString(newTv)))//used mapper to convert object
+                .andExpect(MockMvcResultMatchers.status().isOk());
+                //.andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
 

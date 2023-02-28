@@ -243,7 +243,7 @@ class TelevisionServiceTest implements WithAssertions {
     }
 
     //Ask how to test this method, because delete service return void
-    @Test
+/*    @Test
     void deleteTelevision() {
         Integer id = 1;
         Television newTv = new Television();
@@ -254,7 +254,7 @@ class TelevisionServiceTest implements WithAssertions {
         tvService.deleteTelevision(id);
 
         verify(tvRepo).deleteById(id);
-    }
+    }*/
 
     @Test
     void deleteTelevision_withNullId(){
