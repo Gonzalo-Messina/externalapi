@@ -55,4 +55,6 @@ El mismo se aloja en el siguiente directorio: </p>
 ```
  build/reports/jacoco/test/html/index.html
 ```
-<img src="src/main/resources/TestCoveragePackage.png">
+[![Test-Coverage-Package.png](https://i.postimg.cc/L6Y5QHgb/Test-Coverage-Package.png)](https://postimg.cc/w7z97YVX)
+<br></br>
+[![Test-Coverage-Classes.png](https://i.postimg.cc/2jPLDbYD/Test-Coverage-Classes.png)](https://postimg.cc/bd9w0vdC)
