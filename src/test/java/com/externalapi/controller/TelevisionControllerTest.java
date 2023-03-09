@@ -45,10 +45,12 @@ class TelevisionControllerTest {
         tv.add(new Television(1003,"samsung",120.55,55,10));
         tv.add(new Television(1004,"sony",120.55,60,20));
         tv.add(new Television(1005,"sony",120.55,60,10));
-
         for (int i = 0; i < tv.size(); i++) {
             tv.get(i).setId(i+1);
         }
+/*        int i = 0;
+        tv.forEach(i) -> tv.get(i).setId(i+1);
+        tv.stream().(tv.get(i).getId() -> tv.get(i).setId(i+1));*/
 
         this.baseUrl = new URL("http://localhost:8090/televisions");
     }
@@ -190,7 +192,6 @@ class TelevisionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(mapper.writeValueAsString(newTv)))//used mapper to convert object
                 .andExpect(MockMvcResultMatchers.status().isOk());
-                //.andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -203,7 +204,6 @@ class TelevisionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(mapper.writeValueAsString(newTv)))//used mapper to convert object
                 .andExpect(MockMvcResultMatchers.status().isOk());
-                //.andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
 
@@ -211,7 +211,6 @@ class TelevisionControllerTest {
     void deleteTelevision() throws Exception {
         Integer id = 1;
         when(tvService.getById(id)).thenReturn(Optional.of(tv.get(0)));
-        //when(tvService.deleteTelevision(id)).thenReturn(void);
 
         mockMVC.perform(delete(baseUrl+"/id?id="+id)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))

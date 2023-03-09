@@ -3,6 +3,7 @@ package com.externalapi.service;
 import com.externalapi.entity.Television;
 import com.externalapi.exceptions.TelevisionExceptions;
 import com.externalapi.repository.ITelevisionRepository;
+import lombok.SneakyThrows;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,10 +66,11 @@ public class TelevisionService {
         return tv;
     }
 
+    @SneakyThrows
     @Transactional(readOnly = true)
     public List<Television> getTop2SalesByBrand(String brand){
         List<Television> tvBrand = getByBrand(brand);
-
+        Thread.sleep(10000);
         return getTop2OfaList(tvBrand);
 
     }
