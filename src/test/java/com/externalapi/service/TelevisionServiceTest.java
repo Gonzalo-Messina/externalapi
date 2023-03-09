@@ -42,6 +42,8 @@ class TelevisionServiceTest implements WithAssertions {
         for (int i = 0; i < tv.size(); i++) {
             tv.get(i).setId(i+1);
         }
+
+
     }
 
     @Test

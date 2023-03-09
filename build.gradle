@@ -38,6 +38,8 @@ dependencies {
 
 	annotationProcessor 'org.projectlombok:lombok'
 
+	apply plugin: 'jacoco'
+
 
 
 
