@@ -43,14 +43,16 @@ por ejemplo desde Postman
 
 <h2 align=left id="test"> Tests </h2>
 <p> Para correr los test, agregue la siguiente dependencia al build.gradle: apply plugin: 'jacoco'</p>
-<p> Luego ejecutamos el siguiente comando</p>
+<p> Luego ejecutamos el siguiente comando: </p>
+
 ```
 $ gradle jacocoTestCoverageVerification
 ```
 
 <p> Ademas, al correr dicho comando, se genera un reporte del coverage tanto de los tests unitarios como los de integración.
+
 El mismo se aloja en el siguiente directorio: </p>
- ```
+```
  build/reports/jacoco/test/html/index.html
 ```
-<img src="src/main/resources/TestCoveragePackages.png">
+<img src="src/main/resources/TestCoveragePackage.png">
