@@ -20,8 +20,7 @@
 
 <h2 align=left id="desc"> Descripción del Proyecto </h2>
 <p>
-  Ejemplo de API REST hecha en spring boot para obtener informacion de televisores de una base de datos.
-  La base de datos se encuentra de forma local hecha en MySQL y para los test se utilizo Junit 5 y mockito
+He desarrollado una API REST en Spring Boot que realiza operaciones CRUD en una base de datos MySQL, utilizando JPA y Hibernate para el manejo de la base de datos. Además, he implementado el concepto de optimistic locking para gestionar la concurrencia en la base de datos. En el proyecto, he aplicado conocimientos avanzados en el manejo de excepciones y he realizado pruebas unitarias exhaustivas utilizando JUnit y Mockito. También he utilizado Gradle para la gestión del proyecto y he implementado el concepto de scaffolding para acelerar el proceso de desarrollo. Por último, para documentar la API, he utilizado Swagger.
 </p>
 
 <h2 align=left id = "inst"> Instalación </h2>
@@ -38,17 +37,20 @@ $ gradle clean
 $ gradle bootRun
 ```
 <p> Luego de ejecutar los comandos la aplicacion se encontrara levantada en la URL http://localhost:8090,
-desde esa URL y agregando /televisions a la ruta general(http://localhost:8090/televisions) accederemos a los diferentes endpoints,
+desde esa URL y agregando /televisions a la ruta general(http://localhost:8080/televisions) accederemos a los diferentes endpoints,
 por ejemplo desde Postman
 </p>
 
 <h2 align=left id="test"> Tests </h2>
-<p> Para correr los test, nos posicionamos en el directorio del proyecto y corremos el siguiente comando: </p>
-
+<p> Para correr los test, agregue la siguiente dependencia al build.gradle: apply plugin: 'jacoco'</p>
+<p> Luego ejecutamos el siguiente comando</p>
 ```
-$ gradle clean verify
+$ gradle jacocoTestCoverageVerification
 ```
 
 <p> Ademas, al correr dicho comando, se genera un reporte del coverage tanto de los tests unitarios como los de integración.
 El mismo se aloja en el siguiente directorio: </p>
-
+ ```
+ build/reports/jacoco/test/html/index.html
+```
+<img src="src/main/resources/TestCoveragePackages.png">
